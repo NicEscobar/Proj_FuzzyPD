@@ -41,7 +41,9 @@ Função para pegar os dados que está saindo da placa Arduino.
 ## VIRTUAL SERIAL PORTS EMULATOR
 
 COM1 = Connector
+
 COM2 = Connector
+
 COM1 <=> COM2 = Serial Redirector
 
 
