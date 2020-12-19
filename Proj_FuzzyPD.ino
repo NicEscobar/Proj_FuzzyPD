@@ -5,7 +5,7 @@ float Erro;
 float DErro; 
 float PVanterior;
 float Saida=0;
-int setpoint=40;
+int setpoint=0;
 int s;
 
 //Tabelas de pertinência de Erro, DeltaErro e Bomba 
