@@ -1,5 +1,11 @@
 # Proj_FuzzyPD
 
+## SIMULIDE
+
+Load Firmware:
+
+Proj_FuzzyPD.ino.mega.hex
+
 ## DASHBOARD NODE-RED
 
 ### Função de entrada
@@ -31,5 +37,13 @@ Função para pegar os dados que está saindo da placa Arduino.
       newMsg.topic = "Line2";
    return newMsg;
 ```
+
+## VIRTUAL SERIAL PORTS EMULATOR
+
+COM1 = Connector
+COM2 = Connector
+COM1 <=> COM2 = Serial Redirector
+
+
 
   
