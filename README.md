@@ -1,5 +1,14 @@
 # Projeto Fuzzy PD (Proporcional Derivativo)
 
+## Arduino
+
+
+Uma Biblioteca Fuzzy para Arduino e Sistemas Embarcados
+
+- eFLL (Embedded Fuzzy Logic Library) 
+
+Link: https://blog.zerokol.com/2012/09/arduinofuzzy-uma-biblioteca-fuzzy-para.html
+
 ## SIMULIDE
 
 Load Firmware:
