@@ -6,7 +6,7 @@ float DErro;
 float PVanterior;
 float Saida=0;
 int setpoint=40;
-int i=0;
+int s;
 
 //Tabelas de pertinência de Erro, DeltaErro e Bomba 
 Fuzzy *fuzzy = new Fuzzy();
@@ -248,16 +248,30 @@ void setup()
 
 
 void loop()
-{    
-  Erro=PV-setpoint;
-  fuzzy->setInput(1, Erro);
-  fuzzy->setInput(2, DErro);
-  fuzzy->fuzzify();
-  Saida = fuzzy->defuzzify(1);
-  Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida));
-  PVanterior=PV;
-  PV=0.9954*PV+0.002763*Saida;
-  DErro=PV-PVanterior;
-  i=i+1;
-  delay (300);
+{
+  if (Serial.available() > 0){
+    s =  Serial.parseInt();
+    if(s != setpoint){
+      setpoint=s;
+      }
+    }
+  if (setpoint == 0){
+    Saida =0;
+    PV = 0;
+    setpoint =0;
+    Erro =0;
+    Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";"+String(setpoint)+";");
+    }
+   else{    
+     Erro=PV-setpoint;
+     fuzzy->setInput(1, Erro);
+     fuzzy->setInput(2, DErro);
+     fuzzy->fuzzify();
+     Saida = fuzzy->defuzzify(1);
+     Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";"+String(setpoint)+";");
+     PVanterior=PV;
+     PV=0.9954*PV+0.002763*Saida;
+     DErro=PV-PVanterior;
+   }
+   delay (300);
 }
