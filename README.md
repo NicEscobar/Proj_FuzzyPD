@@ -1,4 +1,4 @@
-# Proj_FuzzyPD
+# Projeto Fuzzy PD (Proporcional Derivativo)
 
 ## SIMULIDE
 
