@@ -250,17 +250,18 @@ void setup()
 void loop()
 {
   if (Serial.available() > 0){
-    s =  Serial.parseInt();
-    if(s != setpoint){
-      setpoint=s;
+      s =  Serial.parseInt();
+      if(s != setpoint){
+        setpoint=s;
       }
     }
   if (setpoint == 0){
-    Saida =0;
-    PV = 0;
-    setpoint =0;
-    Erro =0;
-    Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";"+String(setpoint)+";");
+      Saida =0;
+      PV = 0;
+      setpoint =0;
+      Erro =0;
+    Serial.println(String(PV)+";"+String(Erro)+";"+String(Saida)+";");
+  
     }
    else{    
      Erro=PV-setpoint;
@@ -268,10 +269,10 @@ void loop()
      fuzzy->setInput(2, DErro);
      fuzzy->fuzzify();
      Saida = fuzzy->defuzzify(1);
-     Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";"+String(setpoint)+";");
+     Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";");
      PVanterior=PV;
      PV=0.9954*PV+0.002763*Saida;
      DErro=PV-PVanterior;
    }
-   delay (300);
+   delay (20);
 }
