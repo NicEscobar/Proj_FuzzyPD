@@ -1,11 +1,12 @@
 #include <Fuzzy.h>
 #include <math.h>
+
 float PV=0; // inicializando o nível com zero
 float Erro;
 float DErro; 
 float PVanterior;
 float Saida=0;
-int setpoint=0;
+int setpoint=10;
 int s;
 
 //Tabelas de pertinência de Erro, DeltaErro e Bomba 
@@ -249,21 +250,21 @@ void setup()
 
 void loop()
 {
-  if (Serial.available() > 0){
-      s =  Serial.parseInt();
-      if(s != setpoint){
-        setpoint=s;
-      }
-    }
+  //if (Serial.available() > 0){
+   //   s =  Serial.parseInt();
+    //  if(s != setpoint){
+   //     setpoint=s;
+    //  }
+  //  }
   if (setpoint == 0){
       Saida =0;
       PV = 0;
       setpoint =0;
       Erro =0;
-    Serial.println(String(PV)+";"+String(Erro)+";"+String(Saida)+";");
-  
-    }
-   else{    
+      Serial.println(String(PV)+";"+String(Erro)+";"+String(Saida)+";");
+   }
+   else{  
+
      Erro=PV-setpoint;
      fuzzy->setInput(1, Erro);
      fuzzy->setInput(2, DErro);
@@ -271,8 +272,12 @@ void loop()
      Saida = fuzzy->defuzzify(1);
      Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";");
      PVanterior=PV;
+     
+     //função de transferência
      PV=0.9954*PV+0.002763*Saida;
+     
      DErro=PV-PVanterior;
+     
    }
    delay (20);
 }
