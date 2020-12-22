@@ -6,25 +6,25 @@ float Erro;
 float DErro; 
 float PVanterior=0;
 float Saida=0;
-float setpoint=0;
+float setpoint=10;
 int s;
 
 //Tabelas de pertinência de Erro, DeltaErro e Bomba 
 Fuzzy *fuzzy = new Fuzzy();
        
        //Tirado da função de pertinência do erro-----------------------------
-       FuzzySet *MN = new FuzzySet(-200, -200, -2, -1);
-       FuzzySet *PN = new FuzzySet(-2, -1, -1, 0);
-       FuzzySet *ZE = new FuzzySet(-1, 0, 0, 1);
-       FuzzySet *PP = new FuzzySet(0,1,1,2);
-       FuzzySet *MP = new FuzzySet(1, 2, 200, 200);
+       FuzzySet *MN = new FuzzySet(-20, -20, -0.2, -0.1);
+       FuzzySet *PN = new FuzzySet(-0.2, -0.1, -0.1, 0);
+       FuzzySet *ZE = new FuzzySet(-0.1, 0, 0, 0.1);
+       FuzzySet *PP = new FuzzySet(0,0.1,0.1,0.2);
+       FuzzySet *MP = new FuzzySet(0.1, 0.2, 20, 20);
        
        //Tirado da função de pertinência do delta erro-------------------------
-       FuzzySet *MNd = new FuzzySet(-400, -400, -20, -10);
-       FuzzySet *PNd = new FuzzySet(-20, -10, -10, 0);
-       FuzzySet *ZEd = new FuzzySet(-10, 0, 0, 10);
-       FuzzySet *PPd = new FuzzySet(0,10,10,20);
-       FuzzySet *MPd = new FuzzySet(10, 20, 400, 400);
+       FuzzySet *MNd = new FuzzySet(-40, -40, -2, -1);
+       FuzzySet *PNd = new FuzzySet(-2, -1, -1, 0);
+       FuzzySet *ZEd = new FuzzySet(-1, 0, 0, 1);
+       FuzzySet *PPd = new FuzzySet(0,1,1,2);
+       FuzzySet *MPd = new FuzzySet(1, 2, 40, 40);
        
        //Tirado da função de pertinência da bomba------------------------
        FuzzySet *MB = new FuzzySet(0,0,0,25);
@@ -252,12 +252,12 @@ void setup()
 
 void loop()
 {
-  if (Serial.available() > 0){
-      s =  Serial.parseInt();
-      if(s != setpoint){
-        setpoint=s;
-      }
-    }
+ // if (Serial.available() > 0){
+      //s =  Serial.parseInt();
+     // if(s != setpoint){
+      //  setpoint=s;
+      //}
+   // }
   if (setpoint == 0){;
       Saida =0;
       PV = 0;
