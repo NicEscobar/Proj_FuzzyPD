@@ -4,7 +4,7 @@
 float PV=0; // inicializando o nível com zero
 float Erro;
 float DErro; 
-float PVanterior;
+float PVanterior=0;
 float Saida=0;
 int setpoint=10;
 int s;
@@ -13,11 +13,11 @@ int s;
 Fuzzy *fuzzy = new Fuzzy();
        
        //Tirado da função de pertinência do erro-----------------------------
-       FuzzySet *MN = new FuzzySet(-20, -20, -4, -2);
-       FuzzySet *PN = new FuzzySet(-4, -2, -2, 0);
-       FuzzySet *ZE = new FuzzySet(-2, 0, 0, 2);
-       FuzzySet *PP = new FuzzySet(0,2,2,4);
-       FuzzySet *MP = new FuzzySet(2, 4, 20, 20);
+       FuzzySet *MN = new FuzzySet(-20, -20, -2, -1);
+       FuzzySet *PN = new FuzzySet(-2, -1, -1, 0);
+       FuzzySet *ZE = new FuzzySet(-1, 0, 0, 1);
+       FuzzySet *PP = new FuzzySet(0,1,1,2);
+       FuzzySet *MP = new FuzzySet(0.5, 2, 20, 20);
        
        //Tirado da função de pertinência do delta erro-------------------------
        FuzzySet *MNd = new FuzzySet(-40, -40, -4, -2);
@@ -71,25 +71,25 @@ void setup()
   FuzzyRuleConsequent* thenSaidaMA = new FuzzyRuleConsequent();
 
 
-  // Building FuzzyRule "IF Erro=MN and DEerro = MN THEN saida = MB"-------------------------DeltaE = MN
+  // Building FuzzyRule "IF Erro=MN and DEerro = MN THEN saida = MA"-------------------------DeltaE = MN
   FuzzyRuleAntecedent* ifErroMNAndDErroMNd = new FuzzyRuleAntecedent();
   ifErroMNAndDErroMNd->joinWithAND(MN,MNd);
-  thenSaidaMB->addOutput(MB);
-  FuzzyRule *fuzzyRule1 = new FuzzyRule(1, ifErroMNAndDErroMNd, thenSaidaMB);
+  thenSaidaMA->addOutput(MA);
+  FuzzyRule *fuzzyRule1 = new FuzzyRule(1, ifErroMNAndDErroMNd, thenSaidaMA);
   fuzzy->addFuzzyRule(fuzzyRule1);
 
-  // Building FuzzyRule "IF Erro=PN and DEerro = MN THEN saida = MB "
+  // Building FuzzyRule "IF Erro=PN and DEerro = MN THEN saida = A "
   FuzzyRuleAntecedent* ifErroPNAndDErroMNd = new FuzzyRuleAntecedent();
   ifErroPNAndDErroMNd->joinWithAND(PN,MNd);
-  thenSaidaMB->addOutput(MB);
-  FuzzyRule *fuzzyRule2 = new FuzzyRule(2, ifErroPNAndDErroMNd, thenSaidaMB);
+  thenSaidaA->addOutput(A);
+  FuzzyRule *fuzzyRule2 = new FuzzyRule(2, ifErroPNAndDErroMNd, thenSaidaA);
   fuzzy->addFuzzyRule(fuzzyRule2);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = MN THEN saida = B"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = MN THEN saida = M"
   FuzzyRuleAntecedent* ifErroZEAndDErroMNd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroMNd->joinWithAND(ZE,MNd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule3 = new FuzzyRule(3, ifErroZEAndDErroMNd, thenSaidaB);
+  thenSaidaM->addOutput(M);
+  FuzzyRule *fuzzyRule3 = new FuzzyRule(3, ifErroZEAndDErroMNd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule3);
   
    // Building FuzzyRule "IF Erro=PP and DEerro = MN THEN saida = M"
@@ -99,88 +99,88 @@ void setup()
   FuzzyRule *fuzzyRule4 = new FuzzyRule(4, ifErroPPAndDErroMNd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule4);
 
-  // Building FuzzyRule "IF Erro=MP and DEerro = MN THEN saida = MB"
+  // Building FuzzyRule "IF Erro=MP and DEerro = MN THEN saida = B"
   FuzzyRuleAntecedent* ifErroMPAndDErroMNd = new FuzzyRuleAntecedent();
   ifErroMPAndDErroMNd->joinWithAND(MP,MNd);
-  thenSaidaMB->addOutput(MB);
-  FuzzyRule *fuzzyRule5 = new FuzzyRule(5, ifErroMPAndDErroMNd, thenSaidaMB);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule5 = new FuzzyRule(5, ifErroMPAndDErroMNd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule5);
  
-    // Building FuzzyRule "IF Erro=MN and DEerro = PN THEN saida = MB"-------------------------DeltaE = PN
+    // Building FuzzyRule "IF Erro=MN and DEerro = PN THEN saida = A"-------------------------DeltaE = PN
   FuzzyRuleAntecedent* ifErroMNAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroMNAndDErroPNd->joinWithAND(MN,PNd);
-  thenSaidaMB->addOutput(MB);
-  FuzzyRule *fuzzyRule6 = new FuzzyRule(6, ifErroMNAndDErroPNd, thenSaidaMB);
+  thenSaidaA->addOutput(A);
+  FuzzyRule *fuzzyRule6 = new FuzzyRule(6, ifErroMNAndDErroPNd, thenSaidaA);
   fuzzy->addFuzzyRule(fuzzyRule6);
 
-  // Building FuzzyRule "IF Erro=PN and DEerro = PN THEN saida = B"
+  // Building FuzzyRule "IF Erro=PN and DEerro = PN THEN saida = A"
   FuzzyRuleAntecedent* ifErroPNAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroPNAndDErroPNd->joinWithAND(PN,PNd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule7 = new FuzzyRule(7, ifErroPNAndDErroPNd, thenSaidaB);
+  thenSaidaA->addOutput(A);
+  FuzzyRule *fuzzyRule7 = new FuzzyRule(7, ifErroPNAndDErroPNd, thenSaidaA);
   fuzzy->addFuzzyRule(fuzzyRule7);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = PN THEN saida = B"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = PN THEN saida = M"
   FuzzyRuleAntecedent* ifErroZEAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroPNd->joinWithAND(ZE,PNd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule8 = new FuzzyRule(8, ifErroZEAndDErroPNd, thenSaidaB);
+  thenSaidaM->addOutput(M);
+  FuzzyRule *fuzzyRule8 = new FuzzyRule(8, ifErroZEAndDErroPNd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule8);
  
-   // Building FuzzyRule "IF Erro=PP and DEerro = PN THEN saida = M"
+   // Building FuzzyRule "IF Erro=PP and DEerro = PN THEN saida = B"
   FuzzyRuleAntecedent* ifErroPPAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroPPAndDErroPNd->joinWithAND(PP,PNd);
-  thenSaidaM->addOutput(M);
-  FuzzyRule *fuzzyRule9 = new FuzzyRule(9, ifErroPPAndDErroPNd, thenSaidaM);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule9 = new FuzzyRule(9, ifErroPPAndDErroPNd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule9);
 
-   // Building FuzzyRule "IF Erro=MP and DEerro = PN THEN saida = A"
+   // Building FuzzyRule "IF Erro=MP and DEerro = PN THEN saida = B"
   FuzzyRuleAntecedent* ifErroMPAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroMPAndDErroPNd->joinWithAND(MP,PNd);
-  thenSaidaA->addOutput(A);
-  FuzzyRule *fuzzyRule10 = new FuzzyRule(10, ifErroMPAndDErroPNd, thenSaidaA);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule10 = new FuzzyRule(10, ifErroMPAndDErroPNd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule10);
  
-     // Building FuzzyRule "IF Erro=MN and DEerro = ZE THEN saida = B"-------------------------DeltaE = ZE
+     // Building FuzzyRule "IF Erro=MN and DEerro = ZE THEN saida = M"-------------------------DeltaE = ZE
   FuzzyRuleAntecedent* ifErroMNAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroMNAndDErroZEd->joinWithAND(MN,ZEd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule11 = new FuzzyRule(11, ifErroMNAndDErroZEd, thenSaidaB);
+  thenSaidaM->addOutput(M);
+  FuzzyRule *fuzzyRule11 = new FuzzyRule(11, ifErroMNAndDErroZEd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule11);
 
-  // Building FuzzyRule "IF Erro=PN and DEerro = ZE THEN saida = B"
+  // Building FuzzyRule "IF Erro=PN and DEerro = ZE THEN saida = M"
   FuzzyRuleAntecedent* ifErroPNAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroPNAndDErroZEd->joinWithAND(PN,ZEd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule12 = new FuzzyRule(12, ifErroPNAndDErroZEd, thenSaidaB);
+  thenSaidaM->addOutput(M);
+  FuzzyRule *fuzzyRule12 = new FuzzyRule(12, ifErroPNAndDErroZEd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule12);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = ZE THEN saida = M"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = ZE THEN saida = B"
   FuzzyRuleAntecedent* ifErroZEAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroZEd->joinWithAND(ZE,ZEd);
-  thenSaidaM->addOutput(M);
-  FuzzyRule *fuzzyRule13 = new FuzzyRule(13, ifErroZEAndDErroZEd, thenSaidaM);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule13 = new FuzzyRule(13, ifErroZEAndDErroZEd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule13);
 
-   // Building FuzzyRule "IF Erro=PP and DEerro = ZE THEN saida = A"
+   // Building FuzzyRule "IF Erro=PP and DEerro = ZE THEN saida = MB"
   FuzzyRuleAntecedent* ifErroPPAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroPPAndDErroZEd->joinWithAND(PP,ZEd);
-  thenSaidaA->addOutput(A);
-  FuzzyRule *fuzzyRule14 = new FuzzyRule(14, ifErroPPAndDErroZEd, thenSaidaA);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule14 = new FuzzyRule(14, ifErroPPAndDErroZEd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule14);
 
-   // Building FuzzyRule "IF Erro=MP and DEerro = ZE THEN saida = A"
+   // Building FuzzyRule "IF Erro=MP and DEerro = ZE THEN saida = MB"
   FuzzyRuleAntecedent* ifErroMPAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroMPAndDErroZEd->joinWithAND(MP,ZEd);
-  thenSaidaA->addOutput(A);
-  FuzzyRule *fuzzyRule15 = new FuzzyRule(15, ifErroMPAndDErroZEd, thenSaidaA);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule15 = new FuzzyRule(15, ifErroMPAndDErroZEd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule15);
 
-  // Building FuzzyRule "IF Erro=MN and DEerro = PP THEN saida = B"-------------------------DeltaE = PP
+  // Building FuzzyRule "IF Erro=MN and DEerro = PP THEN saida = M"-------------------------DeltaE = PP
   FuzzyRuleAntecedent* ifErroMNAndDErroPPd = new FuzzyRuleAntecedent();
   ifErroMNAndDErroPPd->joinWithAND(MN,PPd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule16 = new FuzzyRule(16, ifErroMNAndDErroPPd, thenSaidaB);
+  thenSaidaM->addOutput(M);
+  FuzzyRule *fuzzyRule16 = new FuzzyRule(16, ifErroMNAndDErroPPd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule16);
 
   // Building FuzzyRule "IF Erro=PN and DEerro = PP THEN saida = B"
@@ -190,25 +190,25 @@ void setup()
   FuzzyRule *fuzzyRule17 = new FuzzyRule(17, ifErroPNAndDErroPPd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule17);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = PP THEN saida = M"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = PP THEN saida = MB"
   FuzzyRuleAntecedent* ifErroZEAndDErroPPd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroPPd->joinWithAND(ZE,PPd);
-  thenSaidaM->addOutput(M);
-  FuzzyRule *fuzzyRule18 = new FuzzyRule(18, ifErroZEAndDErroPPd, thenSaidaM);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule18 = new FuzzyRule(18, ifErroZEAndDErroPPd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule18);
   
-   // Building FuzzyRule "IF Erro=PP and DEerro = PP THEN saida = A"
+   // Building FuzzyRule "IF Erro=PP and DEerro = PP THEN saida = MB"
   FuzzyRuleAntecedent* ifErroPPAndDErroPPd = new FuzzyRuleAntecedent();
   ifErroPPAndDErroPPd->joinWithAND(PP,PPd);
-  thenSaidaA->addOutput(A);
-  FuzzyRule *fuzzyRule19 = new FuzzyRule(19, ifErroPPAndDErroPPd, thenSaidaA);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule19 = new FuzzyRule(19, ifErroPPAndDErroPPd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule19);
   
-   // Building FuzzyRule "IF Erro=MP and DEerro = PP THEN saida = MA"
+   // Building FuzzyRule "IF Erro=MP and DEerro = PP THEN saida = MB"
   FuzzyRuleAntecedent* ifErroMPAndDErroPPd = new FuzzyRuleAntecedent();
   ifErroMPAndDErroPPd->joinWithAND(MP,PPd);
-  thenSaidaMA->addOutput(MA);
-  FuzzyRule *fuzzyRule20 = new FuzzyRule(20, ifErroMPAndDErroPPd, thenSaidaMA);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule20 = new FuzzyRule(20, ifErroMPAndDErroPPd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule20);
   
   // Building FuzzyRule "IF Erro=MN and DEerro = MP THEN saida = M"-------------------------DeltaE = PP
@@ -218,32 +218,32 @@ void setup()
   FuzzyRule *fuzzyRule21 = new FuzzyRule(21, ifErroMNAndDErroMPd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule21);
 
-  // Building FuzzyRule "IF Erro=PN and DEerro = MP THEN saida = M"
+  // Building FuzzyRule "IF Erro=PN and DEerro = MP THEN saida = B"
   FuzzyRuleAntecedent* ifErroPNAndDErroMPd = new FuzzyRuleAntecedent();
   ifErroPNAndDErroMPd->joinWithAND(PN,MPd);
-  thenSaidaM->addOutput(M);
-  FuzzyRule *fuzzyRule22 = new FuzzyRule(22, ifErroPNAndDErroMPd, thenSaidaM);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule22 = new FuzzyRule(22, ifErroPNAndDErroMPd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule22);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = MP THEN saida = A"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = MP THEN saida = MB"
   FuzzyRuleAntecedent* ifErroZEAndDErroMPd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroMPd->joinWithAND(ZE,MPd);
-  thenSaidaA->addOutput(A);
-  FuzzyRule *fuzzyRule23 = new FuzzyRule(23, ifErroZEAndDErroMPd, thenSaidaA);
+  thenSaidaMB->addOutput(B);
+  FuzzyRule *fuzzyRule23 = new FuzzyRule(23, ifErroZEAndDErroMPd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule23);
   
-   // Building FuzzyRule "IF Erro=PP and DEerro = MP THEN saida = A"
+   // Building FuzzyRule "IF Erro=PP and DEerro = MP THEN saida = MB"
   FuzzyRuleAntecedent* ifErroPPAndDErroMPd = new FuzzyRuleAntecedent();
   ifErroPPAndDErroMPd->joinWithAND(PP,MPd);
-  thenSaidaA->addOutput(A);
-  FuzzyRule *fuzzyRule24 = new FuzzyRule(24, ifErroPPAndDErroMPd, thenSaidaA);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule24 = new FuzzyRule(24, ifErroPPAndDErroMPd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule24);
   
-   // Building FuzzyRule "IF  Erro=MP and DEerro = MP THEN saida = MA"
+   // Building FuzzyRule "IF  Erro=MP and DEerro = MP THEN saida = MB"
   FuzzyRuleAntecedent* ifErroMPAndDErroMPd = new FuzzyRuleAntecedent();
   ifErroMPAndDErroMPd->joinWithAND(MP,MPd);
-  thenSaidaMA->addOutput(MA);
-  FuzzyRule *fuzzyRule25 = new FuzzyRule(25, ifErroMPAndDErroMPd, thenSaidaMA);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule25 = new FuzzyRule(25, ifErroMPAndDErroMPd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule25);
 }
 
@@ -251,19 +251,19 @@ void setup()
 
 void loop()
 {
-  if (Serial.available() > 0){
-      s =  Serial.parseInt();
-      if(s != setpoint){
-        setpoint=s;
-      }
-    }
+  //if (Serial.available() > 0){
+      //s =  Serial.parseInt();
+      //if(s != setpoint){
+      //  setpoint=s;
+     // }
+   // }
   if (setpoint == 0){
       Saida =0;
       PV = 0;
       setpoint =0;
       Erro =0;
       DErro=0;
-      Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";"+String(DErro)+";"+String(setpoint)+";");
+      Serial.println (String(PV)+";"+String(Saida)+";");
    }
    else{  
      Erro=PV-setpoint;
@@ -271,7 +271,7 @@ void loop()
      fuzzy->setInput(2, DErro);
      fuzzy->fuzzify();
      Saida = fuzzy->defuzzify(1);
-     Serial.println (String(PV)+";"+String(Erro)+";"+String(Saida)+";"+String(DErro)+";"+String(setpoint)+";");
+     Serial.println (String(PV)+";"+String(Saida)+";");
      PVanterior=PV;
      //função de transferência
      PV=0.9954*PV+0.002763*Saida;
