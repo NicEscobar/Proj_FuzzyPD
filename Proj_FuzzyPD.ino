@@ -6,25 +6,25 @@ float Erro;
 float DErro; 
 float PVanterior=0;
 float Saida=0;
-int setpoint=10;
+float setpoint=0;
 int s;
 
 //Tabelas de pertinência de Erro, DeltaErro e Bomba 
 Fuzzy *fuzzy = new Fuzzy();
        
        //Tirado da função de pertinência do erro-----------------------------
-       FuzzySet *MN = new FuzzySet(-20, -20, -2, -1);
+       FuzzySet *MN = new FuzzySet(-200, -200, -2, -1);
        FuzzySet *PN = new FuzzySet(-2, -1, -1, 0);
        FuzzySet *ZE = new FuzzySet(-1, 0, 0, 1);
        FuzzySet *PP = new FuzzySet(0,1,1,2);
-       FuzzySet *MP = new FuzzySet(0.5, 2, 20, 20);
+       FuzzySet *MP = new FuzzySet(1, 2, 200, 200);
        
        //Tirado da função de pertinência do delta erro-------------------------
-       FuzzySet *MNd = new FuzzySet(-40, -40, -4, -2);
-       FuzzySet *PNd = new FuzzySet(-4, -2, -2, 0);
-       FuzzySet *ZEd = new FuzzySet(-2, 0, 0, 2);
-       FuzzySet *PPd = new FuzzySet(0,2,2,4);
-       FuzzySet *MPd = new FuzzySet(2, 4, 40, 40);
+       FuzzySet *MNd = new FuzzySet(-400, -400, -20, -10);
+       FuzzySet *PNd = new FuzzySet(-20, -10, -10, 0);
+       FuzzySet *ZEd = new FuzzySet(-10, 0, 0, 10);
+       FuzzySet *PPd = new FuzzySet(0,10,10,20);
+       FuzzySet *MPd = new FuzzySet(10, 20, 400, 400);
        
        //Tirado da função de pertinência da bomba------------------------
        FuzzySet *MB = new FuzzySet(0,0,0,25);
@@ -36,6 +36,7 @@ Fuzzy *fuzzy = new Fuzzy();
 
 void setup()
 {
+  
   Serial.begin(9600);
   //  VARIAVEL erro
         FuzzyInput *Erro = new FuzzyInput(1);
@@ -120,11 +121,11 @@ void setup()
   FuzzyRule *fuzzyRule7 = new FuzzyRule(7, ifErroPNAndDErroPNd, thenSaidaA);
   fuzzy->addFuzzyRule(fuzzyRule7);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = PN THEN saida = M"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = PN THEN saida = B"
   FuzzyRuleAntecedent* ifErroZEAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroPNd->joinWithAND(ZE,PNd);
-  thenSaidaM->addOutput(M);
-  FuzzyRule *fuzzyRule8 = new FuzzyRule(8, ifErroZEAndDErroPNd, thenSaidaM);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule8 = new FuzzyRule(8, ifErroZEAndDErroPNd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule8);
  
    // Building FuzzyRule "IF Erro=PP and DEerro = PN THEN saida = B"
@@ -134,11 +135,11 @@ void setup()
   FuzzyRule *fuzzyRule9 = new FuzzyRule(9, ifErroPPAndDErroPNd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule9);
 
-   // Building FuzzyRule "IF Erro=MP and DEerro = PN THEN saida = B"
+   // Building FuzzyRule "IF Erro=MP and DEerro = PN THEN saida = MB"
   FuzzyRuleAntecedent* ifErroMPAndDErroPNd = new FuzzyRuleAntecedent();
   ifErroMPAndDErroPNd->joinWithAND(MP,PNd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule10 = new FuzzyRule(10, ifErroMPAndDErroPNd, thenSaidaB);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule10 = new FuzzyRule(10, ifErroMPAndDErroPNd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule10);
  
      // Building FuzzyRule "IF Erro=MN and DEerro = ZE THEN saida = M"-------------------------DeltaE = ZE
@@ -148,18 +149,18 @@ void setup()
   FuzzyRule *fuzzyRule11 = new FuzzyRule(11, ifErroMNAndDErroZEd, thenSaidaM);
   fuzzy->addFuzzyRule(fuzzyRule11);
 
-  // Building FuzzyRule "IF Erro=PN and DEerro = ZE THEN saida = M"
+  // Building FuzzyRule "IF Erro=PN and DEerro = ZE THEN saida = B"
   FuzzyRuleAntecedent* ifErroPNAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroPNAndDErroZEd->joinWithAND(PN,ZEd);
-  thenSaidaM->addOutput(M);
-  FuzzyRule *fuzzyRule12 = new FuzzyRule(12, ifErroPNAndDErroZEd, thenSaidaM);
+  thenSaidaB->addOutput(B);
+  FuzzyRule *fuzzyRule12 = new FuzzyRule(12, ifErroPNAndDErroZEd, thenSaidaB);
   fuzzy->addFuzzyRule(fuzzyRule12);
 
-   // Building FuzzyRule "IF Erro=ZE and DEerro = ZE THEN saida = B"
+   // Building FuzzyRule "IF Erro=ZE and DEerro = ZE THEN saida = MB"
   FuzzyRuleAntecedent* ifErroZEAndDErroZEd = new FuzzyRuleAntecedent();
   ifErroZEAndDErroZEd->joinWithAND(ZE,ZEd);
-  thenSaidaB->addOutput(B);
-  FuzzyRule *fuzzyRule13 = new FuzzyRule(13, ifErroZEAndDErroZEd, thenSaidaB);
+  thenSaidaMB->addOutput(MB);
+  FuzzyRule *fuzzyRule13 = new FuzzyRule(13, ifErroZEAndDErroZEd, thenSaidaMB);
   fuzzy->addFuzzyRule(fuzzyRule13);
 
    // Building FuzzyRule "IF Erro=PP and DEerro = ZE THEN saida = MB"
@@ -251,19 +252,20 @@ void setup()
 
 void loop()
 {
-  //if (Serial.available() > 0){
-      //s =  Serial.parseInt();
-      //if(s != setpoint){
-      //  setpoint=s;
-     // }
-   // }
-  if (setpoint == 0){
+  if (Serial.available() > 0){
+      s =  Serial.parseInt();
+      if(s != setpoint){
+        setpoint=s;
+      }
+    }
+  if (setpoint == 0){;
       Saida =0;
       PV = 0;
       setpoint =0;
       Erro =0;
       DErro=0;
-      Serial.println (String(PV)+";"+String(Saida)+";");
+      Serial.println (String(PV)+";"+String(Saida)+";"+String(Erro)+";"+String(DErro)+";");
+      //Serial.println (String(PV)+";"+String(Saida)+";");
    }
    else{  
      Erro=PV-setpoint;
@@ -271,7 +273,8 @@ void loop()
      fuzzy->setInput(2, DErro);
      fuzzy->fuzzify();
      Saida = fuzzy->defuzzify(1);
-     Serial.println (String(PV)+";"+String(Saida)+";");
+     Serial.println (String(PV)+";"+String(Saida)+";"+String(Erro)+";"+String(DErro)+";");
+     //Serial.println (String(PV)+";"+String(Saida)+";");
      PVanterior=PV;
      //função de transferência
      PV=0.9954*PV+0.002763*Saida;
